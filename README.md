@@ -1,1 +1,2 @@
 # travel_assistance_webhooks
+As this project was built using the post from https://medium.com/zenofai/creating-chatbot-using-python-flask-d6947d8ef805 as a guildline, to successullyrun this program, follow the steps in the post to set-up your machine, the code works a bit deffirent as some part has been modified, but the important set-up works the same.
