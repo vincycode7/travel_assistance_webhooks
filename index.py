@@ -21,17 +21,65 @@ def index():
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.get_json(silent=True)
-    if data['queryResult']['queryText'] == 'yes':
+    # print(data)
+    #Sure, I will book a flight ticket to #book_a_flight.geo-city, #book_a_flight.geo-country for $date-time.
+    #OK, I will book a flight ticket to #book_a_flight.geo-city, #book_a_flight.geo-country for #book_a_flight.date-time.
+    
+    if data['queryResult']['intent']['displayName'] == 'book_a_flight_ticket - yes':
+        geo_city = data['queryResult']['outputContexts'][0]['parameters']['geo-city']
+        geo_country = data['queryResult']['outputContexts'][0]['parameters']['geo-country']
+        date_time = data['queryResult']['outputContexts'][0]['parameters']['date-time']['date_time']
+        
         reply = {
-            "fulfillmentText": "Ok. Tickets booked successfully.",
+            "fulfillmentText": "OK, I will book a flight ticket to {}, {} for {}.".format(geo_city, geo_country, date_time),
         }
-        return jsonify(reply)
+        reply2 = {
+            "fulfillmentMessages": [
+                    {
+                        "text": {
+                        "text": [
+                            "OK."
+                        ]
+                        }
+                    },
+                    {
+                        "text": {
+                        "text": [
+                            "I will book a flight ticket to {}, {} for {}.".format(geo_city, geo_country, date_time)
+                        ]
+                        }
+                    }
+                            ]
+        }
+        return jsonify(reply2)
 
-    elif data['queryResult']['queryText'] == 'no':
+    #OK, flight ticket to #book_a_flight.geo-city, #book_a_flight.geo-country for #book_a_flight.date-time. has not been booked but added to cart, you can type "book current flight ticket" to book the most recent flight ticket in cart.
+    elif data['queryResult']['intent']['displayName'] == 'book_a_flight_ticket - no':
+        geo_city = data['queryResult']['outputContexts'][0]['parameters']['geo-city']
+        geo_country = data['queryResult']['outputContexts'][0]['parameters']['geo-country']
+        date_time = data['queryResult']['outputContexts'][0]['parameters']['date-time']['date_time']
         reply = {
-            "fulfillmentText": "Ok. Booking cancelled.",
+            "fulfillmentText": "OK, flight ticket to {}, {} for {}. has not been booked but added to cart, you can type 'book current flight ticket' to book the most recent flight ticket in cart.".format(geo_city, geo_country, date_time),
         }
-        return jsonify(reply)
+        reply2 = {
+            "fulfillmentMessages": [
+                    {
+                        "text": {
+                        "text": [
+                            "OK."
+                        ]
+                        }
+                    },
+                    {
+                        "text": {
+                        "text": [
+                            "Flight ticket to {}, {} for {}. has not been booked but added to cart, you can type 'book current flight ticket' to book the most recent flight ticket in cart.".format(geo_city, geo_country, date_time)
+                        ]
+                        }
+                    }
+                            ]
+        }
+        return jsonify(reply2)
 
 def detect_intent_texts(project_id, session_id, text, language_code):
     session_client = dialogflow.SessionsClient()
